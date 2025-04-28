@@ -10,6 +10,9 @@ on:
         required: false
         type: string
         default: "chore: keep workflows active"
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 
 permissions:
   contents: write
@@ -17,8 +20,12 @@ permissions:
 jobs:
   keep-active:
     runs-on: ubuntu-latest
+    # (optional) nochmal pro Job einschränken
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           persist-credentials: true
@@ -38,5 +45,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "${{ inputs.commit_message }} (last commit was ${{ steps.check.outputs.days }} days ago)"
+          git commit --allow-empty \
+            -m "${{ inputs.commit_message }} (last commit was ${{ steps.check.outputs.days }} days ago)"
           git push
