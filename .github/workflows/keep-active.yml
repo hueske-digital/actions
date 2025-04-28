@@ -6,6 +6,7 @@ on:
       threshold_days:
         required: true
         type: number
+        default: 50
       commit_message:
         required: false
         type: string
