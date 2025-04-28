@@ -1,0 +1,42 @@
+name: Keep workflows active
+
+on:
+  workflow_call:
+    inputs:
+      threshold_days:
+        required: true
+        type: number
+      commit_message:
+        required: false
+        type: string
+        default: "chore: keep workflows active"
+
+permissions:
+  contents: write
+
+jobs:
+  keep-active:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prüfe Alter des letzten Commits
+        id: check
+        shell: bash
+        run: |
+          last_ts=$(git log -1 --format=%ct)
+          now_ts=$(date +%s)
+          days=$(( (now_ts - last_ts) / 86400 ))
+          echo "days=$days" >> $GITHUB_OUTPUT
+
+      - name: Leerer Commit, wenn älter als ${{ inputs.threshold_days }} Tage
+        if: steps.check.outputs.days > inputs.threshold_days
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "${{ inputs.commit_message }} (last commit was ${{ steps.check.outputs.days }} days ago)"
+          git push
