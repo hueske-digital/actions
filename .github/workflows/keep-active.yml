@@ -10,9 +10,6 @@ on:
         required: false
         type: string
         default: "chore: keep workflows active"
-    secrets:
-      GITHUB_TOKEN:
-        required: true
 
 permissions:
   contents: write
@@ -20,7 +17,6 @@ permissions:
 jobs:
   keep-active:
     runs-on: ubuntu-latest
-    # (optional) nochmal pro Job einschränken
     permissions:
       contents: write
     steps:
