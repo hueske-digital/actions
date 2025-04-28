@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       threshold_days:
-        required: true
+        required: false
         type: number
         default: 50
       commit_message:
